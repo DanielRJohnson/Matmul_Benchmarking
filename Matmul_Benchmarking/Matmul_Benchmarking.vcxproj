@@ -24,6 +24,7 @@
     <ProjectGuid>{7f85b9d9-74ef-47d4-9746-36626bf141ff}</ProjectGuid>
     <RootNamespace>FinalProject</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Matmul_Benchmarking</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
