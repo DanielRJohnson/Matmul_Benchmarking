@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 	* Prints a CSV-style output for data analysis.
 	*/
 
-	if (argc < 2) {
+	if (argc < 3) {
 		usageAndDie();
 	}
 
@@ -62,14 +62,31 @@ int main(int argc, char** argv)
 	std::vector<int> Ns = parseOption(argc, argv, "--Ns");
 	std::vector<int> params = parseOption(argc, argv, "--params");
 
-	if (ps.size() < 1 || Ns.size() < 1 || 
-		((algorithm != "vanilla" && algorithm != "parfor") && params.size() < 1) || // only vanilla and parfor have no param
+	if (((algorithm != "vanilla" && algorithm != "parfor") && params.size() < 1) || // only vanilla and parfor have no param
 		((algorithm == "vanilla" || algorithm == "parfor") && params.size() != 0)) {
+		std::cout << "Param count error" << std::endl;
+		usageAndDie();
+	}
+
+	if ( ps.size() < 1 ) {
+		std::cerr << "Need to specify number of processors!" << std::endl;
+		usageAndDie();
+	}
+
+	if ( Ns.size() < 1 ) {
+		std::cerr << "Need to specify matrix dimensions!" << std::endl;
 		usageAndDie();
 	}
 
 	if (algorithm == "vanilla" || algorithm == "parfor") {
+		if ( params.size() != 0 ) {
+			std::cerr << "Algorithm \"" + algorithm + "\" requires 0 parameters!" << std::endl;
+			usageAndDie();
+		}
 		params.push_back(1); // hack so that a later for loop runs once instead of zero times
+	} else if ( params.size() < 1 ) {
+		std::cerr << "Algorithm \"" + algorithm + "\" requires parameters!" << std::endl;
+		usageAndDie();
 	}
 
 	std::function<void(const Matrix&, const Matrix&, Matrix&, int)> chosenAlgorithm =
@@ -81,6 +98,7 @@ int main(int argc, char** argv)
 		(algorithm == "strassens") ? strassensMatmul : nullptr;
 
 	if (chosenAlgorithm == nullptr) {
+		std::cout << "Invalid algorithm: " << algorithm << std::endl;
 		usageAndDie();
 	}
 
