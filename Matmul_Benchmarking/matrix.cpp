@@ -2,14 +2,41 @@
 #include <random>
 #include "matrix.h"
 
+std::string pad_right(std::string text, std::size_t width, std::string padding) {
+	auto pad_diff = width - text.size();
+	if (pad_diff < 1) return text;
+	auto temp = text;
+	for (int i = 0; i < pad_diff / padding.size(); i++)
+		temp += padding;
+	return temp;
+}
+
+std::string pad_left(std::string text, std::size_t width, std::string padding) {
+	auto pad_diff = width - text.size();
+	if (pad_diff < 1) return text;
+	auto temp = text;
+	for (int i = 0; i < pad_diff / padding.size(); i++)
+		temp = padding + temp;
+	return temp;
+}
+
+std::string pad_center(std::string text, std::size_t width, std::string padding) {
+	auto lw = (width-text.size())/2 + text.size();
+	return pad_right(pad_left(text,lw,padding),width,padding);
+}
+
 Matrix::Matrix(float* m, std::size_t innerSize) : _rowLB(0), _rowUB(innerSize), 
 	_colLB(0), _colUB(innerSize), _matrix(std::move(m)), _innerSize(innerSize), _del(true) {}
 
 Matrix::~Matrix() {
-	if ( _del ) delete _matrix;
+	if ( _del ) free(_matrix);
 }
 
 Matrix Matrix::subMatrix(std::size_t rowLB, std::size_t rowUB, std::size_t colLB, std::size_t colUB) {
+	return Matrix(_matrix, _innerSize, rowLB, rowUB, colLB, colUB);
+}
+
+const Matrix Matrix::subMatrix(std::size_t rowLB, std::size_t rowUB, std::size_t colLB, std::size_t colUB) const {
 	return Matrix(_matrix, _innerSize, rowLB, rowUB, colLB, colUB);
 }
 
@@ -52,6 +79,48 @@ float* Matrix::operator[](std::size_t index) const {
 Matrix::Matrix(float* m, std::size_t innerSize, std::size_t rowLB, std::size_t rowUB, 
 	std::size_t colLB, std::size_t colUB) : _rowLB(rowLB), _rowUB(rowUB), _colLB(colLB), 
 	_colUB(colUB), _matrix(m), _innerSize(innerSize) {}
+
+void Matrix::print(std::ostream& out) const {
+	std::vector<std::size_t> colwidths;
+	std::vector<std::vector<std::string>> values(rowSize(), std::vector<std::string>(colSize()));
+	int i, j;
+	col_iter((*this), j) {
+		std::size_t maxw = 0;
+		row_iter((*this), i) {
+			std::string vstr = std::to_string((*this)[i][j]);
+			if ( vstr.size() > maxw ) maxw = vstr.size();
+			values.at(i-rowLowerBound()).at(j-colLowerBound()) = vstr;
+		}
+		colwidths.push_back(maxw);
+	}
+
+	//top
+	out << "┌";
+	for ( auto i = 0; i < colwidths.size(); i++ ) {
+		for ( auto j = 0; j < colwidths.at(i); j++ ) out << "─";
+		if ( i == colwidths.size() - 1 ) out << "┐";
+		else out << "┬";
+	}
+	out << std::endl;
+	//cols
+	row_iter((*this), i) {
+		out << "│";
+		col_iter((*this), j) {
+			out << pad_center(values.at(i-rowLowerBound()).at(j-colLowerBound()), colwidths.at(j-colLowerBound()), " ");
+			out << "│";
+		}
+		out << std::endl;
+	}
+
+	//bottom
+	out << "└";
+	for ( auto i = 0; i < colwidths.size(); i++ ) {
+		for ( auto j = 0; j < colwidths.at(i); j++ ) out << "─";
+		if ( i == colwidths.size() - 1 ) out << "┘";
+		else out << "┴";
+	}
+	out << std::endl;
+}
 
 Matrix generateMatrix(int N, bool fillRandomly) {
 	/*

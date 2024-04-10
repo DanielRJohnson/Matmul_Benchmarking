@@ -4,6 +4,7 @@
 #define MATRIX_H
 
 #include <vector>
+#include <ostream>
 
 class Matrix final {
 public:
@@ -19,6 +20,13 @@ public:
      * are actually within the range of the internal array
      */
     Matrix subMatrix(std::size_t rowLB, std::size_t rowUB, std::size_t colLB, std::size_t colUB);
+
+    /**
+     * Creates a Matrix view of the internal array with different bounds
+     * There is no error checking (because performance), so make sure the bounds
+     * are actually within the range of the internal array
+     */
+    const Matrix subMatrix(std::size_t rowLB, std::size_t rowUB, std::size_t colLB, std::size_t colUB) const;
 
     /** The dimension of the internal matrix */
     std::size_t innerSize() const noexcept;
@@ -38,6 +46,9 @@ public:
     float* operator[](std::size_t index);
     /** Pointer to the beginning of row `index` (indexed based on the internal matrix, ignores bounds) */
     float* operator[](std::size_t index) const;
+
+    /** output matrix */
+    void print(std::ostream&) const;
 protected:
     Matrix(float* m, std::size_t innerSize, 
         std::size_t rowLB, std::size_t rowUB, std::size_t colLB, std::size_t colUB);
