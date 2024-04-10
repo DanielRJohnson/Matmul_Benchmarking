@@ -62,12 +62,6 @@ int main(int argc, char** argv)
 	std::vector<int> Ns = parseOption(argc, argv, "--Ns");
 	std::vector<int> params = parseOption(argc, argv, "--params");
 
-	if (((algorithm != "vanilla" && algorithm != "parfor") && params.size() < 1) || // only vanilla and parfor have no param
-		((algorithm == "vanilla" || algorithm == "parfor") && params.size() != 0)) {
-		std::cout << "Param count error" << std::endl;
-		usageAndDie();
-	}
-
 	if ( ps.size() < 1 ) {
 		std::cerr << "Need to specify number of processors!" << std::endl;
 		usageAndDie();
@@ -89,8 +83,7 @@ int main(int argc, char** argv)
 		usageAndDie();
 	}
 
-	std::function<void(const Matrix&, const Matrix&, Matrix&, int)> chosenAlgorithm =
-		(algorithm == "vanilla") ? vanillaMatmul :
+	auto chosenAlgorithm = (algorithm == "vanilla") ? vanillaMatmul :
 		(algorithm == "parfor") ? parforMatmul :
 		(algorithm == "tiled") ? tiledMatmul :
 		(algorithm == "DAC_notemp") ? noTempDACMatmul :
@@ -98,7 +91,7 @@ int main(int argc, char** argv)
 		(algorithm == "strassens") ? strassensMatmul : nullptr;
 
 	if (chosenAlgorithm == nullptr) {
-		std::cout << "Invalid algorithm: " << algorithm << std::endl;
+		std::cerr << "Invalid algorithm: " << algorithm << std::endl;
 		usageAndDie();
 	}
 
@@ -111,7 +104,7 @@ int main(int argc, char** argv)
 	chosenAlgorithm(eqCheckA, eqCheckB, eqCheckC2, params[0]);
 
 	if (!matrixEquality(eqCheckC1, eqCheckC2)) {
-		std::cout << "Algorithm produced an incorrect answer.\n";
+		std::cerr << "Algorithm produced an incorrect answer.\n";
 		std::exit(1);
 	}
 
@@ -125,7 +118,7 @@ int main(int argc, char** argv)
 	for (auto th: ps) {
 		omp_set_num_threads(th); // limit to th threads
 		std::cout << th;
-		for (auto size: Ns) {
+		for (const auto& size: Ns) {
 			Matrix A = generateMatrix(size, true); // random matrix
 			Matrix B = generateMatrix(size, true); // random matrix
 			Matrix C = generateMatrix(size, false); // empty matrix
