@@ -25,12 +25,8 @@ std::string pad_center(std::string text, std::size_t width, std::string padding)
 	return pad_right(pad_left(text,lw,padding),width,padding);
 }
 
-Matrix::Matrix(float* m, std::size_t innerSize) : _rowLB(0), _rowUB(innerSize), 
-	_colLB(0), _colUB(innerSize), _matrix(std::move(m)), _innerSize(innerSize), _del(true) {}
-
-Matrix::~Matrix() {
-	if ( _del ) free(_matrix);
-}
+Matrix::Matrix(std::shared_ptr<float[]> m, std::size_t innerSize) : _rowLB(0), _rowUB(innerSize), 
+	_colLB(0), _colUB(innerSize), _matrix(std::move(m)), _innerSize(innerSize) {}
 
 Matrix Matrix::subMatrix(std::size_t rowLB, std::size_t rowUB, std::size_t colLB, std::size_t colUB) {
 	return Matrix(_matrix, _innerSize, rowLB, rowUB, colLB, colUB);
@@ -76,7 +72,7 @@ float* Matrix::operator[](std::size_t index) const {
 	return &(_matrix[index*_innerSize]);
 }
 
-Matrix::Matrix(float* m, std::size_t innerSize, std::size_t rowLB, std::size_t rowUB, 
+Matrix::Matrix(std::shared_ptr<float[]> m, std::size_t innerSize, std::size_t rowLB, std::size_t rowUB, 
 	std::size_t colLB, std::size_t colUB) : _rowLB(rowLB), _rowUB(rowUB), _colLB(colLB), 
 	_colUB(colUB), _matrix(m), _innerSize(innerSize) {}
 
@@ -126,7 +122,7 @@ Matrix generateMatrix(int N, bool fillRandomly) {
 	/*
 	* Generates and NxN matrix and optionally fills with random values
 	*/
-	float* matrix = (float*)calloc(N*N, sizeof(float));
+	std::shared_ptr<float[]> matrix(new float[N*N]);
 
 	if (fillRandomly) {
 		std::random_device rd;
@@ -134,6 +130,10 @@ Matrix generateMatrix(int N, bool fillRandomly) {
 		std::uniform_real_distribution<float> dist(0.0f, 10000.0f);
 		for (int i = 0; i < N*N; i++) {
 			matrix[i] = dist(gen);
+		}
+	} else {
+		for (int i = 0; i < N*N; i++) {
+			matrix[i] = 0;
 		}
 	}
 

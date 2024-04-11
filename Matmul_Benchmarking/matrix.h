@@ -4,6 +4,7 @@
 #define MATRIX_H
 
 #include <vector>
+#include <memory>
 #include <ostream>
 
 class Matrix final {
@@ -11,8 +12,7 @@ public:
     /**
      * Create a Matrix wrapper of size `innerSize*innerSize`
      */
-    explicit Matrix(float* m, std::size_t innerSize);
-    ~Matrix();
+    explicit Matrix(std::shared_ptr<float[]> m, std::size_t innerSize);
     
     /**
      * Creates a Matrix view of the internal array with different bounds
@@ -50,18 +50,13 @@ public:
     /** output matrix */
     void print(std::ostream&) const;
 protected:
-    Matrix(float* m, std::size_t innerSize, 
+    Matrix(std::shared_ptr<float[]> m, std::size_t innerSize, 
         std::size_t rowLB, std::size_t rowUB, std::size_t colLB, std::size_t colUB);
 
     std::size_t _rowLB, _rowUB, _colLB, _colUB;
     /** The internal array */
-    float* _matrix;
+    std::shared_ptr<float[]> _matrix;
     std::size_t _innerSize;
-    /**
-     * I was too lazy to write a reference counter for the internal array.
-     * `_matrix` is deleted if public constructor is used, but not if `subMatrix` is called
-     */
-    bool _del = false;
 };
 
 #define row_iter(window, iter) \
