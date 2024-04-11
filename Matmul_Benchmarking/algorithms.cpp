@@ -35,7 +35,19 @@ void parforMatmul(const Matrix& A, const Matrix& B, Matrix& C, int placeholder) 
 }
 
 void tiledMatmul(const Matrix& A, const Matrix& B, Matrix& C, int tileSize) {
-	
+	std::size_t i, j, k;
+	#pragma omp parallel for
+	for ( i = A.rowLowerBound() ; i < A.rowUpperBound() ; i += tileSize ) {
+		#pragma omp parallel for
+		for ( j = B.colLowerBound() ; j < B.colUpperBound() ; j += tileSize ) {
+			for ( k = 0; k < C.rowSize(); k += tileSize ) {
+				auto subA = A.subMatrix(i, i+tileSize, A.colLowerBound()+k, A.colLowerBound()+k+tileSize);
+				auto subB = B.subMatrix(B.rowLowerBound()+k, B.rowLowerBound()+k+tileSize, j, j+tileSize);
+				auto subC = C.subMatrix(i, i+tileSize, j, j+tileSize);
+				vanillaMatmul(subA, subB, subC, 0);
+			}
+		}
+	}
 }
 
 void tempDACMatmul(const Matrix& A, const Matrix& B, Matrix& C, int sizeCutoff) {
