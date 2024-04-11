@@ -12,7 +12,7 @@ public:
     /**
      * Create a Matrix wrapper of size `innerSize*innerSize`
      */
-    explicit Matrix(std::shared_ptr<float[]> m, std::size_t innerSize);
+    explicit Matrix(std::shared_ptr<double[]> m, std::size_t innerSize);
     
     /**
      * Creates a Matrix view of the internal array with different bounds
@@ -43,19 +43,19 @@ public:
     /** Upper bound of a column (exclusive) */
     std::size_t colUpperBound() const noexcept;
     /** Pointer to the beginning of row `index` (indexed based on the internal matrix, ignores bounds) */
-    float* operator[](std::size_t index);
+    double* operator[](std::size_t index);
     /** Pointer to the beginning of row `index` (indexed based on the internal matrix, ignores bounds) */
-    float* operator[](std::size_t index) const;
+    double* operator[](std::size_t index) const;
 
     /** output matrix */
     void print(std::ostream&) const;
 protected:
-    Matrix(std::shared_ptr<float[]> m, std::size_t innerSize, 
+    Matrix(std::shared_ptr<double[]> m, std::size_t innerSize, 
         std::size_t rowLB, std::size_t rowUB, std::size_t colLB, std::size_t colUB);
 
     std::size_t _rowLB, _rowUB, _colLB, _colUB;
     /** The internal array */
-    std::shared_ptr<float[]> _matrix;
+    std::shared_ptr<double[]> _matrix;
     std::size_t _innerSize;
 };
 
