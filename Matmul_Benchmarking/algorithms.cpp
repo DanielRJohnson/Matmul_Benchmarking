@@ -37,7 +37,7 @@ void parforMatmul(const Matrix& A, const Matrix& B, Matrix& C, int placeholder) 
 	* Performs a standard matrix multiplication with the outer two loops parallelized.
 	* The placeholder argument is to have the same type signature as other algorithms.
 	*/
-	std::size_t i, j;
+	int i, j;
 	#pragma omp parallel for
 	for ( i = 0; i < A.rowSize(); i++ ) {
 		#pragma omp parallel for
@@ -50,7 +50,7 @@ void parforMatmul(const Matrix& A, const Matrix& B, Matrix& C, int placeholder) 
 }
 
 void tiledMatmul(const Matrix& A, const Matrix& B, Matrix& C, int tileSize) {
-	std::size_t i, j, k;
+	int i, j, k;
 	#pragma omp parallel for
 	for ( i = A.rowLowerBound() ; i < A.rowUpperBound() ; i += tileSize ) {
 		#pragma omp parallel for
@@ -66,7 +66,7 @@ void tiledMatmul(const Matrix& A, const Matrix& B, Matrix& C, int tileSize) {
 }
 
 void tempDACMatmul(const Matrix& A, const Matrix& B, Matrix& C, int sizeCutoff) {
-	if ( sizeCutoff == C.rowSize() ) {
+	if ( sizeCutoff >= C.rowSize() ) {
 		_vanillaAdjusted(A, B, C);
 	} else {
 		auto T = generateMatrix(C.rowSize(), false);
@@ -136,7 +136,7 @@ void tempDACMatmul(const Matrix& A, const Matrix& B, Matrix& C, int sizeCutoff) 
 		}
 
 		// reduce
-		std::size_t i, j;
+		int i, j;
 		#pragma omp parallel for
 		row_iter(C, i) {
 			#pragma omp parallel for
@@ -148,7 +148,7 @@ void tempDACMatmul(const Matrix& A, const Matrix& B, Matrix& C, int sizeCutoff) 
 }
 
 void noTempDACMatmul(const Matrix& A, const Matrix& B, Matrix& C, int sizeCutoff) {
-	if ( C.rowSize() == sizeCutoff ) {
+	if ( C.rowSize() <= sizeCutoff ) {
 		vanillaMatmul(A, B, C, 0);
 	} else {
 		std::size_t rowPivotA = A.rowLowerBound() + (A.rowSize()/2);
@@ -176,19 +176,19 @@ void noTempDACMatmul(const Matrix& A, const Matrix& B, Matrix& C, int sizeCutoff
 		{
 			#pragma omp section
 			{ 
-				tempDACMatmul(a11, b11, c11, sizeCutoff);
+				noTempDACMatmul(a11, b11, c11, sizeCutoff);
 			}
 			#pragma omp section
 			{ 
-				tempDACMatmul(a11, b12, c12, sizeCutoff);
+				noTempDACMatmul(a11, b12, c12, sizeCutoff);
 			}
 			#pragma omp section
 			{ 
-				tempDACMatmul(a21, b11, c21, sizeCutoff);
+				noTempDACMatmul(a21, b11, c21, sizeCutoff);
 			}
 			#pragma omp section
 			{ 
-				tempDACMatmul(a21, b12, c22, sizeCutoff);
+				noTempDACMatmul(a21, b12, c22, sizeCutoff);
 			}
 		}
 
@@ -196,26 +196,26 @@ void noTempDACMatmul(const Matrix& A, const Matrix& B, Matrix& C, int sizeCutoff
 		{
 			#pragma omp section
 			{ 
-				tempDACMatmul(a12, b21, c11, sizeCutoff);
+				noTempDACMatmul(a12, b21, c11, sizeCutoff);
 			}
 			#pragma omp section
 			{ 
-				tempDACMatmul(a12, b22, c12, sizeCutoff);
+				noTempDACMatmul(a12, b22, c12, sizeCutoff);
 			}
 			#pragma omp section
 			{ 
-				tempDACMatmul(a22, b21, c21, sizeCutoff);
+				noTempDACMatmul(a22, b21, c21, sizeCutoff);
 			}
 			#pragma omp section
 			{ 
-				tempDACMatmul(a22, b22, c22, sizeCutoff);
+				noTempDACMatmul(a22, b22, c22, sizeCutoff);
 			}
 		}
 	}
 }
 
 void matAdd(const Matrix& A, const Matrix& B, Matrix& C, bool neg) {
-	std::size_t i, j;
+	int i, j;
 	#pragma omp parallel for
 	row_iter(A, i) {
 		#pragma omp parallel for
@@ -232,7 +232,7 @@ void matAdd(const Matrix& A, const Matrix& B, Matrix& C, bool neg) {
 }
 
 void strassensMatmul(const Matrix& A, const Matrix& B, Matrix& C, int sizeCutoff) {
-	if ( C.rowSize() == sizeCutoff ) {
+	if ( C.rowSize() <= sizeCutoff ) {
 		_vanillaAdjusted(A, B, C);
 	} else {
 		std::size_t rowPivotA = A.rowLowerBound() + (A.rowSize()/2);

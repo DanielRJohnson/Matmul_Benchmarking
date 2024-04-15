@@ -43,9 +43,9 @@ public:
     /** Upper bound of a column (exclusive) */
     std::size_t colUpperBound() const noexcept;
     /** Pointer to the beginning of row `index` (indexed based on the internal matrix, ignores bounds) */
-    double* operator[](std::size_t index);
+    double* operator[](int index);
     /** Pointer to the beginning of row `index` (indexed based on the internal matrix, ignores bounds) */
-    double* operator[](std::size_t index) const;
+    double* operator[](int index) const;
 
     /** output matrix */
     void print(std::ostream&) const;

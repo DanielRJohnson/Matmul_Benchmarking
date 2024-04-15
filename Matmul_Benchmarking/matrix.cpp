@@ -1,5 +1,6 @@
 #include <vector>
 #include <random>
+#include <string>
 #include "matrix.h"
 
 std::string pad_right(std::string text, std::size_t width, std::string padding) {
@@ -64,11 +65,11 @@ std::size_t Matrix::colUpperBound() const noexcept {
 	return _colUB;
 }
 
-double* Matrix::operator[](std::size_t index) {
+double* Matrix::operator[](int index) {
 	return &(_matrix[index*_innerSize]);
 }
 
-double* Matrix::operator[](std::size_t index) const {
+double* Matrix::operator[](int index) const {
 	return &(_matrix[index*_innerSize]);
 }
 

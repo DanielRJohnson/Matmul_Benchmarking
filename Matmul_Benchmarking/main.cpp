@@ -101,6 +101,8 @@ int main(int argc, char** argv)
 	Matrix eqCheckC1 = generateMatrix(4, false);
 	Matrix eqCheckC2 = generateMatrix(4, false);
 	vanillaMatmul(eqCheckA, eqCheckB, eqCheckC1, 1);
+	omp_set_dynamic(0); // always use the exact number of threads we say to
+	omp_set_num_threads(1);
 	chosenAlgorithm(eqCheckA, eqCheckB, eqCheckC2, params[0]);
 
 	if (!matrixEquality(eqCheckC1, eqCheckC2)) {
@@ -114,10 +116,9 @@ int main(int argc, char** argv)
 	std::vector<int> data_Ns;
 	std::vector<int> data_params;
 
-	omp_set_dynamic(0); // always use the exact number of threads we say to
 	for (auto th: ps) {
 		omp_set_num_threads(th); // limit to th threads
-		std::cout << th;
+		//std::cout << th;
 		for (const auto& size: Ns) {
 			Matrix A = generateMatrix(size, true); // random matrix
 			Matrix B = generateMatrix(size, true); // random matrix
@@ -135,7 +136,7 @@ int main(int argc, char** argv)
 					data_params.push_back(param);
 				}
 			}
-			std::cout << ".";
+			//std::cout << ".";
 		}
 	}
 
