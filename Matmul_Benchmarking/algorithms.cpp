@@ -59,7 +59,7 @@ void tiledMatmul(const Matrix& A, const Matrix& B, Matrix& C, int tileSize) {
 				auto subA = A.subMatrix(i, i+tileSize, A.colLowerBound()+k, A.colLowerBound()+k+tileSize);
 				auto subB = B.subMatrix(B.rowLowerBound()+k, B.rowLowerBound()+k+tileSize, j, j+tileSize);
 				auto subC = C.subMatrix(i, i+tileSize, j, j+tileSize);
-				vanillaMatmul(subA, subB, subC, 0);
+				_vanillaAdjusted(subA, subB, subC);
 			}
 		}
 	}
