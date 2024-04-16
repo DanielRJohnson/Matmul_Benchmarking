@@ -1,6 +1,7 @@
 #include <vector>
 #include <random>
 #include <string>
+#include <cassert>
 #include "matrix.h"
 
 std::string pad_right(std::string text, std::size_t width, std::string padding) {
@@ -30,10 +31,22 @@ Matrix::Matrix(std::shared_ptr<double[]> m, std::size_t innerSize) : _rowLB(0), 
 	_colLB(0), _colUB(innerSize), _matrix(std::move(m)), _innerSize(innerSize) {}
 
 Matrix Matrix::subMatrix(std::size_t rowLB, std::size_t rowUB, std::size_t colLB, std::size_t colUB) {
+#ifdef DEBUG
+	// bounds make valid submatrix of current view
+	assert( rowLB >= _rowLB && rowUB <= _rowUB && colLB >= _colLB && colUB >= _colUB );
+	// bounds are valid (>=0 and <=innersize are implicit, because the outer most matrix view has those bounds)
+	assert( rowUB > rowLB && colUB > colLB );
+#endif
 	return Matrix(_matrix, _innerSize, rowLB, rowUB, colLB, colUB);
 }
 
 const Matrix Matrix::subMatrix(std::size_t rowLB, std::size_t rowUB, std::size_t colLB, std::size_t colUB) const {
+#ifdef DEBUG
+	// bounds make valid submatrix of current view
+	assert( rowLB >= _rowLB && rowUB <= _rowUB && colLB >= _colLB && colUB >= _colUB );
+	// bounds are valid (>=0 and <=innersize are implicit, because the outer most matrix view has those bounds)
+	assert( rowUB > rowLB && colUB > colLB );
+#endif
 	return Matrix(_matrix, _innerSize, rowLB, rowUB, colLB, colUB);
 }
 
