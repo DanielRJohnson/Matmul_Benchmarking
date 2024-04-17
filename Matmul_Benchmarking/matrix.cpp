@@ -92,29 +92,29 @@ void Matrix::print(std::ostream& out) const {
 	}
 
 	//top
-	out << "┌";
+	out << "+";
 	for ( auto i = 0; i < colwidths.size(); i++ ) {
-		for ( auto j = 0; j < colwidths.at(i); j++ ) out << "─";
-		if ( i == colwidths.size() - 1 ) out << "┐";
-		else out << "┬";
+		for ( auto j = 0; j < colwidths.at(i); j++ ) out << "-";
+		if ( i == colwidths.size() - 1 ) out << "+";
+		else out << "+";
 	}
 	out << std::endl;
 	//cols
 	row_iter((*this), i) {
-		out << "│";
+		out << "|";
 		col_iter((*this), j) {
 			out << pad_center(values.at(i-rowLowerBound()).at(j-colLowerBound()), colwidths.at(j-colLowerBound()), " ");
-			out << "│";
+			out << "|";
 		}
 		out << std::endl;
 	}
 
 	//bottom
-	out << "└";
+	out << "+";
 	for ( auto i = 0; i < colwidths.size(); i++ ) {
-		for ( auto j = 0; j < colwidths.at(i); j++ ) out << "─";
-		if ( i == colwidths.size() - 1 ) out << "┘";
-		else out << "┴";
+		for ( auto j = 0; j < colwidths.at(i); j++ ) out << "-";
+		if ( i == colwidths.size() - 1 ) out << "+";
+		else out << "+";
 	}
 	out << std::endl;
 }
@@ -128,7 +128,7 @@ Matrix generateMatrix(int N, bool fillRandomly) {
 	if (fillRandomly) {
 		std::random_device rd;
 		std::mt19937 gen(rd());
-		std::uniform_real_distribution<double> dist(0.0f, 10000.0f);
+		std::uniform_real_distribution<double> dist(0.0f, 10.0f);
 		for (int i = 0; i < N*N; i++) {
 			matrix[i] = dist(gen);
 		}
@@ -152,7 +152,7 @@ bool matrixEquality(const Matrix& A, const Matrix& B) {
 
 	std::size_t i, j;
 	row_iter(A, i) {
-		row_iter(B, j) {
+		col_iter(B, j) {
 			if (std::abs(A[i][j] - B[i][j]) > 1e-6) {
 				return false;
 			}

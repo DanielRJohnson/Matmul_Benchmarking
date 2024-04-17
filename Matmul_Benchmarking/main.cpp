@@ -96,10 +96,10 @@ int main(int argc, char** argv)
 	}
 
 	// check that the written algorithm is correct
-	Matrix eqCheckA = generateMatrix(4, true);
-	Matrix eqCheckB = generateMatrix(4, true);
-	Matrix eqCheckC1 = generateMatrix(4, false);
-	Matrix eqCheckC2 = generateMatrix(4, false);
+	Matrix eqCheckA = generateMatrix(16, true);
+	Matrix eqCheckB = generateMatrix(16, true);
+	Matrix eqCheckC1 = generateMatrix(16, false);
+	Matrix eqCheckC2 = generateMatrix(16, false);
 	vanillaMatmul(eqCheckA, eqCheckB, eqCheckC1, 1);
 	omp_set_dynamic(0); // always use the exact number of threads we say to
 	omp_set_num_threads(1);
@@ -107,6 +107,8 @@ int main(int argc, char** argv)
 
 	if (!matrixEquality(eqCheckC1, eqCheckC2)) {
 		std::cerr << "Algorithm produced an incorrect answer.\n";
+		eqCheckC1.print(std::cerr);
+		eqCheckC2.print(std::cerr);
 		std::exit(1);
 	}
 

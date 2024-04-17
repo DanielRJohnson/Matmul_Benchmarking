@@ -148,8 +148,8 @@ void tempDACMatmul(const Matrix& A, const Matrix& B, Matrix& C, int sizeCutoff) 
 }
 
 void noTempDACMatmul(const Matrix& A, const Matrix& B, Matrix& C, int sizeCutoff) {
-	if ( C.rowSize() <= sizeCutoff ) {
-		vanillaMatmul(A, B, C, 0);
+	if ( sizeCutoff >= C.rowSize() ) {
+		_vanillaAdjusted(A, B, C);
 	} else {
 		std::size_t rowPivotA = A.rowLowerBound() + (A.rowSize()/2);
 		std::size_t colPivotA = A.colLowerBound() + (A.colSize()/2);
