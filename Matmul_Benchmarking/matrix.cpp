@@ -33,7 +33,7 @@ Matrix::Matrix(std::shared_ptr<double[]> m, std::size_t innerSize) : _rowLB(0), 
 Matrix Matrix::subMatrix(std::size_t rowLB, std::size_t rowUB, std::size_t colLB, std::size_t colUB) {
 #ifdef DEBUG
 	// bounds make valid submatrix of current view
-	assert( rowLB >= _rowLB && rowUB <= _rowUB && colLB >= _colLB && colUB >= _colUB );
+	assert( rowLB >= _rowLB && rowUB <= _rowUB && colLB >= _colLB && colUB <= _colUB );
 	// bounds are valid (>=0 and <=innersize are implicit, because the outer most matrix view has those bounds)
 	assert( rowUB > rowLB && colUB > colLB );
 #endif
@@ -43,7 +43,7 @@ Matrix Matrix::subMatrix(std::size_t rowLB, std::size_t rowUB, std::size_t colLB
 const Matrix Matrix::subMatrix(std::size_t rowLB, std::size_t rowUB, std::size_t colLB, std::size_t colUB) const {
 #ifdef DEBUG
 	// bounds make valid submatrix of current view
-	assert( rowLB >= _rowLB && rowUB <= _rowUB && colLB >= _colLB && colUB >= _colUB );
+	assert( rowLB >= _rowLB && rowUB <= _rowUB && colLB >= _colLB && colUB <= _colUB );
 	// bounds are valid (>=0 and <=innersize are implicit, because the outer most matrix view has those bounds)
 	assert( rowUB > rowLB && colUB > colLB );
 #endif
