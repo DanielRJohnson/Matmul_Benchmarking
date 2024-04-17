@@ -95,11 +95,13 @@ int main(int argc, char** argv)
 		usageAndDie();
 	}
 
+	auto eqchSize = (algorithm != "tiled" || params[0] <= 4) ? 4 : params[0] * 2;
+
 	// check that the written algorithm is correct
-	Matrix eqCheckA = generateMatrix(16, true);
-	Matrix eqCheckB = generateMatrix(16, true);
-	Matrix eqCheckC1 = generateMatrix(16, false);
-	Matrix eqCheckC2 = generateMatrix(16, false);
+	Matrix eqCheckA = generateMatrix(eqchSize, true);
+	Matrix eqCheckB = generateMatrix(eqchSize, true);
+	Matrix eqCheckC1 = generateMatrix(eqchSize, false);
+	Matrix eqCheckC2 = generateMatrix(eqchSize, false);
 	vanillaMatmul(eqCheckA, eqCheckB, eqCheckC1, 1);
 	omp_set_dynamic(0); // always use the exact number of threads we say to
 	omp_set_num_threads(1);
