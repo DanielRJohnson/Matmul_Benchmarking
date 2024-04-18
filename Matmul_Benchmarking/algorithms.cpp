@@ -53,9 +53,7 @@ void parforMatmul(const Matrix& A, const Matrix& B, Matrix& C, int placeholder) 
 
 void tiledMatmul(const Matrix& A, const Matrix& B, Matrix& C, int tileSize) {
 	int i, j;
-	#pragma omp parallel for
 	for ( i = A.rowLowerBound() ; i < A.rowUpperBound() ; i += tileSize ) {
-		#pragma omp parallel for
 		for ( j = B.colLowerBound() ; j < B.colUpperBound() ; j += tileSize ) {
 			for ( int k = 0; k < C.rowSize(); k += tileSize ) {
 				auto acol = A.colLowerBound() + k;
