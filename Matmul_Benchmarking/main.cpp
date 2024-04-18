@@ -145,7 +145,7 @@ int main(int argc, char** argv)
 	}
 
 	// print data
-	std::cout << "\nthreads, N, runtime(ms), param\n";
+	std::cout << "threads,N,runtime(ms),param\n";
 	for (int i = 0; i < data_times.size(); i++) {
 		std::cout << data_ps[i] << ", " << data_Ns[i] << ", " << data_times[i] << ", " << data_params[i] << "\n";
 	}

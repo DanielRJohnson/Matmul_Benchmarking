@@ -50,14 +50,18 @@ void parforMatmul(const Matrix& A, const Matrix& B, Matrix& C, int placeholder) 
 }
 
 void tiledMatmul(const Matrix& A, const Matrix& B, Matrix& C, int tileSize) {
-	int i, j, k;
+	int i, j;
 	#pragma omp parallel for
 	for ( i = A.rowLowerBound() ; i < A.rowUpperBound() ; i += tileSize ) {
 		#pragma omp parallel for
 		for ( j = B.colLowerBound() ; j < B.colUpperBound() ; j += tileSize ) {
-			for ( k = 0; k < C.rowSize(); k += tileSize ) {
-				auto subA = A.subMatrix(i, i+tileSize, A.colLowerBound()+k, A.colLowerBound()+k+tileSize);
-				auto subB = B.subMatrix(B.rowLowerBound()+k, B.rowLowerBound()+k+tileSize, j, j+tileSize);
+			for ( int k = 0; k < C.rowSize(); k += tileSize ) {
+				auto acol = A.colLowerBound() + k;
+				auto subA = A.subMatrix(i, i+tileSize, acol, acol+tileSize);
+
+				auto brow = B.rowLowerBound() + k;
+				auto subB = B.subMatrix(brow, brow+tileSize, j, j+tileSize);
+
 				auto subC = C.subMatrix(i, i+tileSize, j, j+tileSize);
 				_vanillaAdjusted(subA, subB, subC);
 			}
