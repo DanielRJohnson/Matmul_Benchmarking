@@ -1,4 +1,4 @@
-algorithm, n_runs, runtime(s),N,threads,param,L1_DC_MISS_PERCENT
+algorithm,n_runs,runtime(s),N,threads,param,L1_DC_MISS_PERCENT
 vanilla,10,391.296,2048,16,1,9.50
 parfor,10,34.349,2048,16,1,14.12
 tiled,10,20.217,2048,16,8,12.82
