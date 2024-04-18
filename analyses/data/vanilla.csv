@@ -1,5 +1,4 @@
-
-threads, N, runtime(ms), param
+threads,N,runtime(ms),param
 1, 32, 0.0662, 1
 1, 32, 0.0662, 1
 1, 32, 0.0663, 1
