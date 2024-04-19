@@ -22,9 +22,7 @@ void _vanillaAdjusted(const Matrix& A, const Matrix& B, Matrix& C) {
 	* tiled, DAC, and Strassens can have C appear in different offsets, which this version accounts for
 	*/
 	int i, j;
-	#pragma omp parallel for
 	row_iter(A, i) {
-		#pragma omp parallel for
 		col_iter(B, j) {
 			for ( auto k = 0; k < B.rowSize(); k++ ) {
 				C[i-A.rowLowerBound()+C.rowLowerBound()][j-B.colLowerBound()+C.colLowerBound()] 
@@ -40,7 +38,9 @@ void parforMatmul(const Matrix& A, const Matrix& B, Matrix& C, int placeholder) 
 	* The placeholder argument is to have the same type signature as other algorithms.
 	*/
 	int i, j;
+	#pragma omp parallel for
 	for ( i = 0; i < A.rowSize(); i++ ) {
+		#pragma omp parallel for
 		for ( j = 0; j < B.colSize(); j++ ) {
 			for ( auto k = 0; k < B.rowSize(); k++ ) {
 				C[i][j] += A[i][k] * B[k][j];
